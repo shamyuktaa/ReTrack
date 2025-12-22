@@ -1,0 +1,7 @@
+cd backend/ReTrackV1-final
+
+dotnet restore
+dotnet ef database update
+dotnet build
+
+Write-Host "Backend setup complete"

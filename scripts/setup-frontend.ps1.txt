@@ -1,0 +1,6 @@
+cd ../frontend/retrack
+
+npm install
+npm run build
+
+Write-Host "Frontend setup complete"
