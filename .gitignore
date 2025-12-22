@@ -1,3 +1,6 @@
+#env
+.env
+
 # backend
 bin/
 obj/
@@ -13,3 +16,7 @@ dist/
 # IDE
 .vscode/
 .idea/
+
+
+#Visual Studio -IDE
+.vs
