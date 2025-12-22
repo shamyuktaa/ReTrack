@@ -1,0 +1,15 @@
+# backend
+bin/
+obj/
+
+# frontend
+node_modules/
+.next/
+dist/
+
+# logs
+*.log
+
+# IDE
+.vscode/
+.idea/
