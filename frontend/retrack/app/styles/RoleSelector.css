@@ -1,0 +1,981 @@
+/* Role Selector Styles */
+.role-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  padding: 2rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.role-selector.fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
+/* Updated button styling for purple-pink theme with white cards */
+.role-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+  border: none;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.95);
+  color: #1f2937;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  min-width: 140px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.role-button.slide-up {
+  animation: slideUp 0.5s ease-out;
+}
+
+.role-button.slide-up:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.role-button.slide-up:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.role-button.slide-up:nth-child(3) {
+  animation-delay: 0.3s;
+}
+.role-button.slide-up:nth-child(4) {
+  animation-delay: 0.4s;
+}
+
+/* Updated hover effect to match purple-pink theme */
+.role-button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #a855f7, #ec4899);
+  color: white;
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(168, 85, 247, 0.4);
+}
+
+.role-button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.role-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.role-button.loading {
+  opacity: 0.8;
+}
+
+.role-button-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.role-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 28px;
+  width: 28px;
+  color: #a855f7;
+}
+
+/* Updated spinner color to purple */
+.spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid rgba(168, 85, 247, 0.2);
+  border-top-color: #a855f7;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.role-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-align: center;
+}
+
+.loading-indicator {
+  position: absolute;
+  bottom: -1.5rem;
+  font-size: 0.75rem;
+  color: #e9d5ff;
+  white-space: nowrap;
+}
+
+/* Added login modal styling */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  max-width: 400px;
+  width: 90%;
+  animation: slideUp 0.3s ease-out;
+}
+
+.modal-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.login-input {
+  padding: 0.75rem 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.login-input:focus {
+  outline: none;
+  border-color: #a855f7;
+  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.1);
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.btn-cancel,
+.btn-submit {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-cancel {
+  background: #f3f4f6;
+  color: #1f2937;
+  border: 2px solid #e5e7eb;
+}
+
+.btn-cancel:hover {
+  background: #e5e7eb;
+}
+
+.btn-submit {
+  background: linear-gradient(135deg, #a855f7, #ec4899);
+  color: white;
+}
+
+.btn-submit:hover {
+  box-shadow: 0 4px 12px rgba(168, 85, 247, 0.4);
+  transform: translateY(-2px);
+}
+
+.btn-submit:active {
+  transform: translateY(0);
+}
+
+/* ============================================
+   DASHBOARD CONTAINER - Displays on login background
+   ============================================ */
+
+.dashboard-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, #7c3aed, #a855f7, #ec4899);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  z-index: 999;
+  overflow-y: auto;
+}
+
+/* Updated dashboard wrapper with subtle semi-transparent background instead of white, integrated with login page gradient */
+.dashboard-wrapper {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  width: 100%;
+  max-width: 1100px;
+  height: auto;
+  max-height: 80vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Made dashboard header background more subtle with transparency */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid rgba(229, 231, 235, 0.5);
+  background: rgba(249, 250, 251, 0.8);
+  border-radius: 20px 20px 0 0;
+}
+
+.dashboard-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+}
+
+.logout-btn {
+  padding: 0.5rem 1rem;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+}
+
+/* Main grid layout - two columns for requests and scanning */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1rem;
+  padding: 1rem;
+  flex: 1;
+}
+
+/* Section styling */
+.dashboard-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  background: #ffffff;
+}
+
+/* Updated section backgrounds with subtle semi-transparent styling */
+.requests-section {
+  border: 1px solid rgba(229, 231, 235, 0.6);
+  border-radius: 12px;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.scanning-section {
+  border: 1px solid rgba(229, 231, 235, 0.6);
+  border-radius: 12px;
+  padding: 1rem;
+  background: rgba(250, 250, 250, 0.8);
+}
+
+/* Section header styling */
+.section-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  border-bottom: 2px solid #f3f4f6;
+  padding-bottom: 0.75rem;
+}
+
+.section-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+}
+
+.section-subtitle {
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* Search bar styling */
+.search-bar {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+/* Updated filter button with purple theme */
+.filter-btn {
+  padding: 0.75rem 1.5rem;
+  background: rgba(168, 85, 247, 0.1);
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  border-radius: 6px;
+  font-weight: 600;
+  color: #a855f7;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.filter-btn:hover {
+  background: rgba(168, 85, 247, 0.2);
+  border-color: rgba(168, 85, 247, 0.5);
+}
+
+.search-input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #a855f7;
+  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.1);
+}
+
+/* Table styling */
+.table-container {
+  overflow-x: auto;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.requests-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+
+.requests-table thead {
+  background: #f9fafb;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.requests-table th {
+  padding: 0.75rem;
+  text-align: left;
+  font-weight: 800;
+  color: #111827;
+}
+
+.requests-table tbody tr {
+  border-bottom: 1px solid #e5e7eb;
+  transition: all 0.2s ease;
+}
+
+.requests-table tbody tr:hover {
+  background: #f9fafb;
+}
+
+.requests-table td {
+  padding: 0.75rem;
+  color: #000000;
+  font-weight: 500;
+}
+
+.cell-bold {
+  font-weight: 700;
+  color: #111827;
+}
+
+/* Status badge styling */
+.status-badge {
+  display: inline-block;
+  padding: 0.375rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.status-badge.ready {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.status-badge.pending {
+  background: #f3f4f6;
+  color: #4b5563;
+}
+
+/* Updated process button with purple theme */
+.process-btn {
+  padding: 0.5rem 1rem;
+  background: rgba(168, 85, 247, 0.15);
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  border-radius: 6px;
+  font-weight: 600;
+  color: #a855f7;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.process-btn:hover {
+  background: rgba(168, 85, 247, 0.25);
+  border-color: rgba(168, 85, 247, 0.5);
+  transform: translateY(-1px);
+}
+
+/* Form styling */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.form-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #374151;
+}
+
+.form-input {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #a855f7;
+  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.1);
+}
+
+/* Updated scan button with purple-pink gradient background */
+.scan-btn {
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, #a855f7, #ec4899);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.85rem;
+}
+
+.scan-btn:hover {
+  box-shadow: 0 4px 12px rgba(168, 85, 247, 0.4);
+  transform: translateY(-1px);
+}
+
+.scan-btn:active {
+  transform: translateY(0);
+}
+
+/* Parcels list styling */
+.parcels-list {
+  max-height: 120px;
+  overflow-y: auto;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 0.75rem;
+  background: white;
+}
+
+.parcel-item {
+  padding: 0.5rem;
+  background: #dbeafe;
+  border: 1px solid #93c5fd;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  color: #1e40af;
+  margin-bottom: 0.5rem;
+}
+
+.parcel-item:last-child {
+  margin-bottom: 0;
+}
+
+.empty-message {
+  font-size: 0.875rem;
+  color: #9ca3af;
+  text-align: center;
+  padding: 1rem;
+}
+
+/* Auto-generate and action buttons */
+/* Updated auto-generate button with subtle purple background */
+.auto-gen-btn {
+  padding: 0.5rem 1rem;
+  background: rgba(168, 85, 247, 0.15);
+  color: #a855f7;
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.85rem;
+}
+
+.auto-gen-btn:hover {
+  background: rgba(168, 85, 247, 0.25);
+  border-color: rgba(168, 85, 247, 0.5);
+}
+
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* Updated handover button with purple gradient background */
+.handover-btn {
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, #a855f7, #ec4899);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.85rem;
+}
+
+.handover-btn:hover {
+  box-shadow: 0 4px 12px rgba(168, 85, 247, 0.4);
+  transform: translateY(-1px);
+}
+
+.handover-btn:active {
+  transform: translateY(0);
+}
+
+/* Updated clear button with subtle purple theme */
+.clear-btn {
+  padding: 0.5rem 1rem;
+  background: rgba(168, 85, 247, 0.1);
+  color: #a855f7;
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.85rem;
+}
+
+.clear-btn:hover {
+  background: rgba(168, 85, 247, 0.2);
+  border-color: rgba(168, 85, 247, 0.5);
+}
+
+/* Responsive design */
+@media (max-width: 1024px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .dashboard-wrapper {
+    max-width: 95%;
+  }
+}
+
+@media (max-width: 640px) {
+  .dashboard-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .dashboard-grid {
+    padding: 1rem;
+  }
+
+  .requests-section,
+  .scanning-section {
+    padding: 1rem;
+  }
+
+  .requests-table {
+    font-size: 0.75rem;
+  }
+
+  .requests-table th,
+  .requests-table td {
+    padding: 0.5rem;
+  }
+}
+
+/* ============================================
+   SCANNER MODAL - Overlay for parcel scanning
+   ============================================ */
+
+.scanner-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.scanner-modal {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+  width: 90%;
+  max-width: 450px;
+  overflow: hidden;
+  animation: slideUp 0.3s ease-out;
+}
+
+.scanner-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  background: linear-gradient(135deg, #a855f7, #ec4899);
+  border-bottom: none;
+}
+
+.scanner-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: white;
+  margin: 0;
+}
+
+.scanner-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: white;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.2s ease;
+}
+
+.scanner-close:hover {
+  transform: scale(1.2);
+}
+
+.scanner-body {
+  padding: 2rem;
+}
+
+.scanner-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.scanner-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.scanner-input {
+  padding: 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.scanner-input:focus {
+  outline: none;
+  border-color: #a855f7;
+  box-shadow: 0 0 0 4px rgba(168, 85, 247, 0.1);
+}
+
+.scanner-buttons {
+  display: flex;
+  gap: 1rem;
+  padding: 1.5rem 2rem;
+  background: #f9fafb;
+  border-top: 1px solid #e5e7eb;
+}
+
+.scanner-btn-cancel {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  background: white;
+  border: 2px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.scanner-btn-cancel:hover {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.scanner-btn-confirm {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, #a855f7, #ec4899);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.scanner-btn-confirm:hover {
+  box-shadow: 0 4px 12px rgba(168, 85, 247, 0.4);
+  transform: translateY(-1px);
+}
+
+.scanner-btn-confirm:active {
+  transform: translateY(0);
+}
+
+/* Added styles for scanned report table */
+.scanned-report {
+  border: 1px solid rgba(168, 85, 247, 0.2);
+  border-radius: 8px;
+  overflow: hidden;
+  /* Applied subtle purple-pink semi-transparent background matching login page */
+  background: rgba(168, 85, 247, 0.08);
+  backdrop-filter: blur(8px);
+}
+
+.report-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+
+.report-table thead {
+  /* Updated header background to subtle purple tint */
+  background: rgba(168, 85, 247, 0.06);
+  border-bottom: 2px solid rgba(168, 85, 247, 0.15);
+}
+
+.report-table th {
+  padding: 0.75rem;
+  text-align: left;
+  font-weight: 700;
+  color: #374151;
+}
+
+.report-table tbody tr {
+  border-bottom: 1px solid rgba(168, 85, 247, 0.1);
+  transition: all 0.2s ease;
+}
+
+.report-table tbody tr:hover {
+  /* Subtle hover effect with purple tint */
+  background: rgba(168, 85, 247, 0.04);
+}
+
+.report-table td {
+  padding: 0.75rem;
+  color: #374151;
+}
+
+.empty-report {
+  padding: 2rem;
+  text-align: center;
+  /* Applied subtle purple background to empty state */
+  background: rgba(168, 85, 247, 0.06);
+  border-radius: 8px;
+}
+
+.report-summary {
+  display: flex;
+  gap: 1rem;
+  padding: 0.75rem;
+  background: rgba(168, 85, 247, 0.06);
+  border-top: 1px solid rgba(168, 85, 247, 0.15);
+  border-radius: 0 0 8px 8px;
+  justify-content: center;
+}
+
+.summary-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  /* Applied subtle purple semi-transparent background */
+  background: rgba(168, 85, 247, 0.08);
+  border-radius: 6px;
+  border: 1px solid rgba(168, 85, 247, 0.2);
+}
+
+.summary-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.summary-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #a855f7;
+}
+
+/* Camera scanner modal styling */
+.camera-scanner-modal {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+  width: 90%;
+  max-width: 500px;
+  overflow: hidden;
+  animation: slideUp 0.3s ease-out;
+}
+
+.camera-container {
+  position: relative;
+  width: 100%;
+  padding-bottom: 100%;
+  height: 0;
+  overflow: hidden;
+  background: #000;
+}
+
+.camera-feed {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Scanning grid overlay on camera */
+.camera-overlay-grid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: linear-gradient(
+      0deg,
+      transparent calc(50% - 2px),
+      rgba(255, 255, 255, 0.03) calc(50% - 1px),
+      rgba(255, 255, 255, 0.03) calc(50% + 1px),
+      transparent calc(50% + 2px)
+    ),
+    linear-gradient(
+      90deg,
+      transparent calc(50% - 2px),
+      rgba(255, 255, 255, 0.03) calc(50% - 1px),
+      rgba(255, 255, 255, 0.03) calc(50% + 1px),
+      transparent calc(50% + 2px)
+    );
+  background-size: 40px 40px;
+  pointer-events: none;
+}
+
+/* Camera controls */
+.camera-controls {
+  padding: 1.5rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.capture-btn {
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #a855f7, #ec4899);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.capture-btn:hover {
+  box-shadow: 0 4px 12px rgba(168, 85, 247, 0.4);
+  transform: translateY(-2px);
+}
+
+/* Manual entry fallback */
+.manual-entry {
+  padding: 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+  background: white;
+}
+
+.manual-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151; /* Corrected: Added a valid color code */
+}
