@@ -206,7 +206,6 @@ export default function AdminPage() {
   </button>
 </div>
 
-
         {/* PAGE CONTENT */}
         {activeView === "pickupAgents" && <PickupAgentModule />}
         {activeView === "warehouseStaff" && <AdminDashboard staffType="warehouse" />}
