@@ -18,56 +18,59 @@ namespace ReTrackV1.Services
         {
             var anomalies = DetectSuspiciousReturns();
 
-            // Safety check
-            if (anomalies.Count == 0)
+            float ScoreBand(float avg)
             {
-                return new RiskScoresDto
-                {
-                    CustomerRisk = 0,
-                    AgentRisk = 0,
-                    WarehouseRisk = 0,
-                    SystemRisk = 0
-                };
+                if (avg < 0.05f) return 25f;
+                if (avg < 0.10f) return 45f;
+                if (avg < 0.20f) return 65f;
+                if (avg < 0.35f) return 80f;
+                return 90f;
             }
 
-            float Normalize(IEnumerable<float> scores)
+            float Weighted(IEnumerable<float> scores, float weight)
             {
-                if (!scores.Any()) return 0;
-                return MathF.Round(scores.Average() * 100, 2);
+                if (!scores.Any()) return 20f * weight;
+                return MathF.Round(ScoreBand(scores.Average()) * weight, 1);
             }
 
             return new RiskScoresDto
             {
-                CustomerRisk = Normalize(
-                    anomalies
-                        .Where(x => x.Data.IsReported == 1)
-                        .Select(x => x.Score)
+                CustomerRisk = Weighted(
+                    anomalies.Where(x => x.Data.IsReported == 1)
+                             .Select(x => x.Score),
+                    1.0f
                 ),
 
-                AgentRisk = Normalize(
-                    anomalies
-                        .Where(x => x.Data.IsInWarehouse == 0)
-                        .Select(x => x.Score)
+                AgentRisk = Weighted(
+                    anomalies.Where(x => x.Data.IsInWarehouse == 0)
+                             .Select(x => x.Score),
+                    0.9f
                 ),
 
-                WarehouseRisk = Normalize(
-                    anomalies
-                        .Where(x => x.Data.SealBroken == 1)
-                        .Select(x => x.Score)
+                WarehouseRisk = Weighted(
+                    anomalies.Where(x => x.Data.SealBroken == 1)
+                             .Select(x => x.Score),
+                    0.8f
                 ),
 
-                SystemRisk = Normalize(
-                    anomalies.Select(x => x.Score)
+                SystemRisk = Weighted(
+                    anomalies.Select(x => x.Score),
+                    0.85f
                 )
             };
         }
 
-        public List<(ReturnData Data, bool IsAnomaly, float Score)> DetectSuspiciousReturns()
+        // ====================================================
+        // CORE ML LOGIC
+        // ====================================================
+        public List<(ReturnData Data, bool IsAnomaly, float Score)>
+            DetectSuspiciousReturns()
         {
             var ml = new MLContext(seed: 42);
 
-            // Build ML-ready dataset
-            // ✅ MATERIALIZE FIRST (prevents open DataReader issue)
+            // -----------------------------
+            // MATERIALIZE DB DATA SAFELY
+            // -----------------------------
             var bagItems = _db.BagItems.ToList();
             var bags = _db.Bags.ToList();
 
@@ -76,23 +79,44 @@ namespace ReTrackV1.Services
                 join b in bags on bi.BagId equals b.Id
                 select new ReturnData
                 {
-                    Expected = bi.Expected == "Yes" ? 1f : 0f,
-                    IsReported = bi.Status == "Report" ? 1f : 0f,
-                    SealBroken = b.SealIntegrity == "Intact" ? 0f : 1f,
-                    IsInWarehouse = b.Status == "InWarehouse" ? 1f : 0f,
+                    Expected = bi.Expected != null &&
+                               bi.Expected.Equals("Yes",
+                                   StringComparison.OrdinalIgnoreCase)
+                                   ? 1f : 0f,
+
+                    IsReported = bi.Status != null &&
+                                 bi.Status.Contains("Report",
+                                     StringComparison.OrdinalIgnoreCase)
+                                     ? 1f : 0f,
+
+                    SealBroken = b.SealIntegrity != null &&
+                                 !b.SealIntegrity.Equals("Intact",
+                                     StringComparison.OrdinalIgnoreCase)
+                                     ? 1f : 0f,
+
+                    IsInWarehouse = b.Status != null &&
+                                    b.Status.Contains("Warehouse",
+                                        StringComparison.OrdinalIgnoreCase)
+                                        ? 1f : 0f,
+
                     WarehouseId = (float)(b.WarehouseId ?? 0)
                 }
             ).ToList();
 
-
-
-            // 🛑 SAFETY: PCA needs enough rows
-            if (raw.Count < 10)
+            // -----------------------------
+            // SAFETY CHECK (LOWERED THRESHOLD)
+            // -----------------------------
+            if (raw.Count < 3)
                 return new();
 
+            // -----------------------------
+            // LOAD DATA
+            // -----------------------------
             var data = ml.Data.LoadFromEnumerable(raw);
 
-            // ✅ STABLE anomaly detection pipeline
+            // -----------------------------
+            // PCA ANOMALY PIPELINE
+            // -----------------------------
             var pipeline = ml.Transforms
                 .Concatenate(
                     "Features",
@@ -105,18 +129,23 @@ namespace ReTrackV1.Services
                 .Append(
                     ml.AnomalyDetection.Trainers.RandomizedPca(
                         featureColumnName: "Features",
-                        rank: 2   // 🔥 FIXED (was 5)
+                        rank: 2
                     )
                 );
 
             var model = pipeline.Fit(data);
-            var engine = ml.Model.CreatePredictionEngine<ReturnData, ReturnAnomalyPrediction>(model);
+            var engine =
+                ml.Model.CreatePredictionEngine
+                    <ReturnData, ReturnAnomalyPrediction>(model);
 
+            // -----------------------------
+            // RUN PREDICTIONS
+            // -----------------------------
             var results = raw
                 .Select(r =>
                 {
-                    var p = engine.Predict(r);
-                    return (r, p.IsAnomaly, p.Score);
+                    var prediction = engine.Predict(r);
+                    return (r, prediction.IsAnomaly, prediction.Score);
                 })
                 .OrderByDescending(x => x.Score)
                 .ToList();

@@ -103,4 +103,30 @@ public class BagItemsController : ControllerBase
         await _db.SaveChangesAsync();
         return Ok(bag);
     }
+
+    [HttpPut("{id}/seal-integrity")]
+    public async Task<IActionResult> UpdateSealIntegrity(int id, [FromBody] string sealIntegrity)
+    {
+        // Find the Bag entity using the ID provided in the URL
+        var bag = await _db.Bags.FindAsync(id);
+
+        if (bag == null)
+        {
+            return NotFound(new { message = $"Bag with ID {id} not found." });
+        }
+
+        // Update the SealIntegrity property
+        bag.SealIntegrity = sealIntegrity;
+
+        try
+        {
+            await _db.SaveChangesAsync();
+        }
+        catch (DbUpdateException ex)
+        {
+            return StatusCode(500, "An error occurred while updating the database.");
+        }
+
+        return Ok(bag);
+    }
 }

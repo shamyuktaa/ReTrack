@@ -279,7 +279,7 @@ const areAllBagsSealed = bags.length > 0 && bags.every(b => (b.status === "Seale
                   Bag: {selectedBag.bagCode}
                 </h2>
 
-                {selectedBag.status !== "Sealed" && (
+                {(selectedBag.status === "Open")&& (
                   <button
                     onClick={() => setShowSealConfirm(true)}
                     className="bg-orange-600 px-4 py-2 rounded text-white"
@@ -292,19 +292,19 @@ const areAllBagsSealed = bags.length > 0 && bags.every(b => (b.status === "Seale
               <p className="text-sm text-gray-400 mb-4">
                 Status:{" "}
                 <span className="text-white font-medium">
-                  {selectedBag.status === "Sealed" ? "Sealed" : "Open"}
+                  {selectedBag.status}
                 </span>
               </p>
 
+              {selectedBag.status === "Open" && (
               <div className="flex gap-2 mb-2">
                 <input
                   id="assignInput"
-                  disabled={selectedBag.status === "Sealed"}
                   className="flex-1 bg-gray-800 text-white p-2 rounded"
                   placeholder="Enter Return ID"
                 />
                 <button
-                  disabled={assigning || selectedBag.status === "Sealed"}
+                  disabled={assigning}
                   onClick={() => {
                     const val = (
                       document.getElementById("assignInput") as HTMLInputElement
@@ -316,6 +316,8 @@ const areAllBagsSealed = bags.length > 0 && bags.every(b => (b.status === "Seale
                   Assign
                 </button>
               </div>
+            )}
+
 
               {assignMessage && (
                 <p className="text-sm mt-2 text-yellow-400">{assignMessage}</p>

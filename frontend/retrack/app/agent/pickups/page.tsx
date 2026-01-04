@@ -22,7 +22,7 @@ export default function PickupsPage() {
 
   useEffect(() => {
     const role = localStorage.getItem("role")
-    if (role === "Agent") {
+    if (role === "PickupAgent") {
       setAuthorized(true)
     } else {
       router.replace("/")
@@ -31,7 +31,7 @@ export default function PickupsPage() {
 
   useEffect(() => {
     if (!authorized) return
-    const agentId = localStorage.getItem("userId") || "4" // use real logged in id or fallback to 4 (seed)
+    const agentId = localStorage.getItem("userId");
 
     setLoading(true)
     fetch(`${API_BASE_URL}/api/agent/${agentId}/pickups`)

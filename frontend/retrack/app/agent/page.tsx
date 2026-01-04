@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { FiPhoneCall } from "react-icons/fi";
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL!
 
 type PickupRow = {
   returnId: string
@@ -40,6 +39,14 @@ export default function AgentPage() {
   const [page, setPage] = useState<number>(1)
   const pageSize = 25
   const [totalPickups, setTotalPickups] = useState<number>(0)
+
+  // Safe API base detection
+  const apiBase = (typeof process !== "undefined" &&
+    process.env.NEXT_PUBLIC_API_BASE &&
+    process.env.NEXT_PUBLIC_API_BASE !== "undefined" &&
+    process.env.NEXT_PUBLIC_API_BASE.trim().length > 0)
+    ? process.env.NEXT_PUBLIC_API_BASE.trim()
+    : "https://localhost:7147"
 
   useEffect(() => {
     setIsClient(true)
@@ -89,7 +96,7 @@ export default function AgentPage() {
     setLoadingSummary(true)
     setSummaryError(null)
     try {
-      const url = `${API_BASE_URL}/api/Agent/${agentId}/summary`
+      const url = `${apiBase}/api/Agent/${agentId}/summary`
       const res = await fetch(url)
       if (!res.ok) {
         const errTxt = await readErrorText(res)
@@ -117,7 +124,7 @@ export default function AgentPage() {
     setLoadingPickups(true)
     setPickupsError(null)
     try {
-      const url = `${API_BASE_URL}/api/Agent/${agentId}/pickups?page=${p}&pageSize=${pageSize}`
+      const url = `${apiBase}/api/Agent/${agentId}/pickups?page=${p}&pageSize=${pageSize}`
       const res = await fetch(url)
       if (!res.ok) {
         const errTxt = await readErrorText(res)
@@ -192,7 +199,7 @@ export default function AgentPage() {
         note: reportNote,
         agentId: Number(agentId)
       }
-      const res = await fetch(`${API_BASE_URL}/api/Agent/returns/${encodeURIComponent(reportReturnId)}/report`, {
+      const res = await fetch(`${apiBase}/api/Agent/returns/${encodeURIComponent(reportReturnId)}/report`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body)
@@ -367,12 +374,6 @@ export default function AgentPage() {
                           </span>
                         </td>
                         <td className="py-3 flex gap-3">
-                          <button
-                            className="flex items-center gap-2 text-emerald-500 hover:text-blue-300 text-xl"
-                            onClick={() => { window.open(`tel:${r.customerPhone ?? ""}`, "_self") }}
-                          >
-                            Call <FiPhoneCall size={15}/>
-                          </button>
 
                           <button
                             className="items-center text-blue-400 hover:text-blue-200"

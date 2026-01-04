@@ -46,7 +46,7 @@ export default function TrendsPage() {
     setError("")
     try {
       // NOTE: Replace '/api/trends' with your actual API endpoint URL
-      const response = await fetch(`${API_BASE_URL}/admin/trends`) 
+      const response = await fetch(`${API_BASE_URL}/api/overview/admin/trends`) 
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)

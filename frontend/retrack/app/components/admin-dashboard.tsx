@@ -159,9 +159,6 @@ const closeModal = () => {
           />
         </div>
 
-        <button className="bg-gray-800 hover:bg-gray-700 border border-gray-700 text-white px-6 py-3 rounded-xl transition-all">
-          Export Data
-        </button>
       </div>
 
       {/* ================== TABLE ================== */}

@@ -14,13 +14,15 @@ if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development
 
 var builder = WebApplication.CreateBuilder(args);
 
-/* ????????????? CONFIG ????????????? */
+/* ————————————— CONFIG ————————————— */
 
 string jwtKey = Environment.GetEnvironmentVariable("JWT_KEY")
     ?? throw new Exception("JWT_KEY is missing");
 
 string jwtIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER") ?? "ReTrack";
 string jwtAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE") ?? "ReTrackUsers";
+
+// FIX: Ensure this matches your frontend port exactly (e.g., http://localhost:5173 or 3000)
 string frontendUrl = Environment.GetEnvironmentVariable("FRONTEND_URL") ?? "http://localhost:3000";
 
 string connectionString =
@@ -28,7 +30,7 @@ string connectionString =
     ?? builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new Exception("Database connection missing");
 
-/* ????????????? SERVICES ????????????? */
+/* ————————————— SERVICES ————————————— */
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -40,7 +42,11 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<AnomalyDetectionService>();
 builder.Services.AddSignalR();
 
-/* ????????????? AUTH ????????????? */
+/* --------------- EMAIL -------------- */
+builder.Services.AddScoped<EmailService>();
+
+
+/* ————————————— AUTH ————————————— */
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 .AddJwtBearer(options =>
@@ -58,7 +64,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     };
 });
 
-/* ????????????? CORS ????????????? */
+/* ————————————— CORS ————————————— */
 
 builder.Services.AddCors(options =>
 {
@@ -67,13 +73,13 @@ builder.Services.AddCors(options =>
         policy.WithOrigins(frontendUrl)
               .AllowAnyHeader()
               .AllowAnyMethod()
-              .AllowCredentials();
+              .AllowCredentials(); // Required for SignalR
     });
 });
 
 var app = builder.Build();
 
-/* ????????????? MIDDLEWARE ????????????? */
+/* ————————————— MIDDLEWARE ————————————— */
 
 if (app.Environment.IsDevelopment())
 {
@@ -81,12 +87,19 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// IMPORTANT: UseCors must be called after UseRouting (implicit here) 
+// but before UseAuthentication and UseAuthorization.
+app.UseRouting();
+
 app.UseCors("AllowFrontend");
+
+// Move HttpsRedirection AFTER Cors to avoid preflight redirect issues in some browsers
+app.UseHttpsRedirection();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
-/* ????????????? STATIC FILES ????????????? */
+/* ————————————— STATIC FILES ————————————— */
 
 app.UseStaticFiles();
 app.UseStaticFiles(new StaticFileOptions

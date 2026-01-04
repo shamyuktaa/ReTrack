@@ -5,6 +5,7 @@ import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL!
 
 /* ───────────────── STATE → CITY MAP ───────────────── */
 const STATE_CITY_MAP: Record<string, string[]> = {
@@ -145,7 +146,7 @@ export default function RegisterPage() {
       formData.append("QCCertificatePath", data.qcCertificate)
     }
 
-    const res = await fetch("https://localhost:7147/api/auth/register", {
+    const res = await fetch(`${API_BASE_URL}/api/auth/register`, {
       method: "POST",
       body: formData,
     })
@@ -165,13 +166,13 @@ export default function RegisterPage() {
       <h1 className="text-3xl font-bold mb-6">New User Registration</h1>
       <p className="text-gray-400 mb-4">Role: {role}</p>
 
-      <div className="w-full max-w-lg bg-gray-800 p-6 rounded-xl space-y-4">
+      <div className=" min-h-screen w-full max-w-lg bg-gray-800 p-6 rounded-xl space-y-4">
 
         <input {...register("name")} placeholder="Full Name" className="w-full p-3 rounded bg-gray-700" />
-        {errors.name && <p className="text-red-400">{errors.name.message}</p>}
+        {errors.name && <p className="text-red-400 top-4 left-0 -mt-3">{errors.name.message}</p>}
 
         <input type="date" {...register("dob")} className="w-full p-3 rounded bg-gray-700" />
-        {errors.dob && <p className="text-red-400">{errors.dob.message}</p>}
+        {errors.dob && <p className="text-red-400 top-4 left-0 -mt-3">{errors.dob.message}</p>}
 
         <select {...register("state")} className="w-full p-3 rounded bg-gray-700">
           <option value="">Select State</option>
@@ -179,7 +180,7 @@ export default function RegisterPage() {
             <option key={s} value={s}>{s}</option>
           ))}
         </select>
-        {errors.state && <p className="text-red-400">{errors.state.message}</p>}
+        {errors.state && <p className="text-red-400 top-4 left-0 -mt-3">{errors.state.message}</p>}
 
         <select {...register("city")} disabled={!selectedState} className="w-full p-3 rounded bg-gray-700">
           <option value="">Select City</option>
@@ -187,19 +188,19 @@ export default function RegisterPage() {
             <option key={city} value={city}>{city}</option>
           ))}
         </select>
-        {errors.city && <p className="text-red-400">{errors.city.message}</p>}
+        {errors.city && <p className="text-red-400 top-4 left-0 -mt-3">{errors.city.message}</p>}
 
         <input {...register("address")} placeholder="Residential Address" className="w-full p-3 rounded bg-gray-700" />
-        {errors.address && <p className="text-red-400">{errors.address.message}</p>}
+        {errors.address && <p className="text-red-400 top-4 left-0 -mt-3">{errors.address.message}</p>}
 
         <input {...register("phone")} placeholder="Phone Number" className="w-full p-3 rounded bg-gray-700" />
-        {errors.phone && <p className="text-red-400">{errors.phone.message}</p>}
+        {errors.phone && <p className="text-red-400 top-4 left-0 -mt-3">{errors.phone.message}</p>}
 
         <input {...register("email")} placeholder="Email" className="w-full p-3 rounded bg-gray-700" />
-        {errors.email && <p className="text-red-400">{errors.email.message}</p>}
+        {errors.email && <p className="text-red-400 top-4 left-0 -mt-3">{errors.email.message}</p>}
 
          {/* Identity Document Upload */}
-         <div className="pt-4 border-t border-gray-700">
+         <div className="pt-4 border-t border-gray-700 space-y-5">
              <label className="block text-sm font-semibold mb-2">Identity Document</label>
              <div 
                  className={`relative w-full p-3 rounded bg-gray-700 hover:bg-gray-600 transition cursor-pointer 
@@ -225,6 +226,7 @@ export default function RegisterPage() {
                      </span>
                  </div>
              </div>
+              {errors.identityDocument && <p className="text-red-400 top-4 left-0 -mt-3">{errors.identityDocument.message}</p>}
          </div>
 
          {/* QC Certificate Upload */}
@@ -254,6 +256,7 @@ export default function RegisterPage() {
                      {fileNames.qcCert ? 'Change' : 'Browse'}
                  </span>
              </div>
+
          </div>
      </div>
        )}

@@ -3,14 +3,14 @@
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL!
 
 export async function getProductById(ProductId: string) {
-  const res = await fetch(`${API_BASE_URL}/qc/task-product/${ProductId}`);
+  const res = await fetch(`${API_BASE_URL}/api/qc/task-product/${ProductId}`);
   if (!res.ok) return null;
   return await res.json();
 }
 
-export async function fetchReportById(id: number) {
+export async function fetchReportById(id: string) {
   try {
-    const res = await fetch(`${API_BASE_URL}/qc/report/${id}`);
+    const res = await fetch(`${API_BASE_URL}/api/qc/report/${id}`);
     return await res.json();
   } catch {
     return null;
@@ -29,7 +29,7 @@ export async function submitQCReport(report: any) {
     InspectionDate: report.inspectionDate
   };
 
-  const res = await fetch(`${API_BASE_URL}/qc/report`, {
+  const res = await fetch(`${API_BASE_URL}/api/qc/report`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
@@ -40,7 +40,7 @@ export async function submitQCReport(report: any) {
 
 // FETCH ALL QC REPORTS
 export async function fetchAllReports() {
-  const res = await fetch(`${API_BASE_URL}/qc/reports`);
+  const res = await fetch(`${API_BASE_URL}/api/qc/reports`);
   return res.ok ? await res.json() : [];
 }
 
@@ -52,5 +52,17 @@ export async function fetchRiskScores() {
   if (!res.ok) {
     throw new Error("Failed to fetch risk scores");
   }
+  return res.json();
+}
+
+export async function fetchQCTasks() {
+  const res = await fetch(
+    `${API_BASE_URL}/api/qc/tasks`
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch QC tasks");
+  }
+
   return res.json();
 }

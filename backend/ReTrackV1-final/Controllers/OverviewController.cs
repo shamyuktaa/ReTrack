@@ -84,33 +84,77 @@ namespace ReTrackV1.Controllers
 
         //ADMIN
         //DASHBOARD OVERVIEW :-
-        [HttpGet("/admin/summary")]
+        //[HttpGet("/admin/summary")]
+        //public async Task<IActionResult> GetSummary()
+        //{
+        //    // Only count 
+        //    //Total Returns Processed
+        //    //Active Agents
+        //    //Warehouses Managed
+        //    //QC Success Rate (Approved)*100/(Total QC Tasks)
+        //    var Total_returns = await _db.Returns.CountAsync(r=>r.CreatedAt >= DateTime.Now.AddDays(-30));
+        //    var Active_agents = await _db.Users.CountAsync(u=>u.Status=="Active");
+        //    var Warehouses = await _db.Warehouses.CountAsync();
+
+        //    // calc success rate
+        //    var approved = await _db.QCReports.CountAsync(qc => qc.FinalDecision == "Approved");
+        //    Console.WriteLine(approved);
+        //    var totalQC = await _db.QCTasks.CountAsync();
+        //    Console.WriteLine(approved);
+        //    var QCsuccessRate = 0.0f;
+        //    if (totalQC > 0)
+        //    {
+        //        float calculatedRate = (float)approved * 100 / totalQC;
+        //        QCsuccessRate = (float)Math.Round(calculatedRate, 2);
+        //    }
+        //    return Ok(new { Total_returns, Active_agents, Warehouses, QCsuccessRate});
+        //}
+
+        [HttpGet("admin/summary")]
         public async Task<IActionResult> GetSummary()
         {
-            // Only count 
-            //Total Returns Processed
-            //Active Agents
-            //Warehouses Managed
-            //QC Success Rate (Approved)*100/(Total QC Tasks)
-            var Total_returns = await _db.Returns.CountAsync(r=>r.CreatedAt >= DateTime.Now.AddDays(-30));
-            var Active_agents = await _db.Users.CountAsync(u=>u.Status=="Active");
+            // Last 30 days
+            var Total_returns = await _db.Returns
+                .CountAsync(r => r.CreatedAt >= DateTime.Now.AddDays(-30));
+
+            var Active_agents = await _db.Users
+                .CountAsync(u => u.Status == "Active");
+
             var Warehouses = await _db.Warehouses.CountAsync();
 
-            // calc success rate
-            var approved = await _db.QCReports.CountAsync(qc => qc.FinalDecision == "Approved");
+            // ---- FIXED QC SUCCESS RATE LOGIC ----
+
+            // Count DISTINCT QC tasks that are approved
+            var approvedTasks = await _db.QCReports
+                .Where(qc => qc.FinalDecision == "Approved")
+                .Select(qc => qc.ReportID)
+                .Distinct()
+                .CountAsync();
+
             var totalQC = await _db.QCTasks.CountAsync();
-            var QCsuccessRate = 0.0f;
+
+            float QCsuccessRate = 0.0f;
+
             if (totalQC > 0)
             {
-                float calculatedRate = (float)approved * 100 / totalQC;
-                QCsuccessRate = (float)Math.Round(calculatedRate, 2);
+                QCsuccessRate = (float)Math.Round(
+                    Math.Min(100, (double)approvedTasks / totalQC * 100),
+                    2
+                );
             }
-            return Ok(new { Total_returns, Active_agents, Warehouses, QCsuccessRate});
+
+            return Ok(new
+            {
+                Total_returns,
+                Active_agents,
+                Warehouses,
+                QCsuccessRate
+            });
         }
 
         // TRENDS CONTROLLER
 
-        [HttpGet("/admin/trends")]
+        [HttpGet("admin/trends")]
         public async Task<IActionResult> GetTrends()
         {
             var now = DateTime.Now;

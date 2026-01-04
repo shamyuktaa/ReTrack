@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { fetchAllReports } from "@/app/lib/qcApi";
+import { fetchAllReports, fetchQCTasks } from "@/app/lib/qcApi";
 import StatCard from "@/app/components/StatCard";
 import RiskMeter from "../qc/components/RiskMeter";
 import SuspiciousReturnCard from "./components/SuspiciousReturnCard";
@@ -77,7 +77,7 @@ export default function QCDashboard() {
 
     if (searchId.trim() !== "") {
       updated = updated.filter((r) =>
-        r.productID?.toLowerCase().includes(searchId.toLowerCase())
+r.ProductID?.toLowerCase().includes(searchId.toLowerCase())
       );
     }
 
@@ -260,6 +260,7 @@ cursor-pointer hover:bg-blue-500 transition-all duration-200"
             onClick={() => router.push("/qc/control")}
             className="bg-blue-600 hover:bg-blue-500 rounded px-4 py-3"
           >
+            
             + New QC Report
           </button>
 
@@ -280,7 +281,7 @@ cursor-pointer hover:bg-blue-500 transition-all duration-200"
       <div className="bg-[#1e293b] p-6 rounded-xl shadow border border-gray-700">
         <h2 className="text-xl font-semibold mb-4">Final Status and Reporting</h2>
 
-        <table className="w-full border-collapse">
+        <table className="w-full border-collapse text-center">
           <thead>
             <tr className="border-b border-gray-700">
               <th className="p-3">Product ID</th>
@@ -303,7 +304,7 @@ cursor-pointer hover:bg-blue-500 transition-all duration-200"
               filteredReports.map((r, idx) => (
                 <tr
                   key={idx}
-                  onClick={() => router.push(`/qc/report/${r.reportID}`)}
+                  onClick={() => router.push(`/qc/report/${r.ProductID}`)}
                   className="cursor-pointer border-b border-gray-800 hover:bg-[#0f172a]"
                 >
                   <td className="p-3">{r.ProductID}</td>

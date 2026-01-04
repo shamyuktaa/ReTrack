@@ -7,7 +7,7 @@ using ReTrackV1.Models.Entity;
 namespace ReTrackV1.Controllers
 {
     [ApiController]
-    [Route("qc")]
+    [Route("api/qc")]
     public class QCController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -46,18 +46,20 @@ namespace ReTrackV1.Controllers
         }
 
         // ----------------------------------------------------
-        // GET PRODUCT BY ID from QCTasks (QC Control Page)
+        // GET PRODUCT BY ID FROM QC TASKS (Validation)
         // ----------------------------------------------------
         [HttpGet("task-product/{productId}")]
         public async Task<IActionResult> GetProductFromTasks(string productId)
         {
             var qcTask = await _context.QCTasks
-                .Where(t => t.ProductId == productId)
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(t => t.ProductId == productId);
 
             if (qcTask == null)
             {
-                return NotFound(new { message = $"Product {productId} not assigned for QC." });
+                return NotFound(new
+                {
+                    message = $"Product {productId} not assigned for QC."
+                });
             }
 
             var product = await _context.Products
@@ -65,10 +67,32 @@ namespace ReTrackV1.Controllers
 
             if (product == null)
             {
-                return StatusCode(500, new { message = "Product details missing for assigned task." });
+                return StatusCode(500, new
+                {
+                    message = "Product details missing for assigned task."
+                });
             }
 
             return Ok(product);
+        }
+
+        // ----------------------------------------------------
+        // GET ALL QC TASKS (FOR PRODUCT ID DROPDOWN)
+        // ----------------------------------------------------
+        [HttpGet("tasks")]
+        public async Task<IActionResult> GetQCTasks()
+        {
+            var tasks = await _context.QCTasks
+                .Where(t => t.Status == "Pending")   // keeps dropdown clean
+                .Select(t => new
+                {
+                    taskId = t.Id,
+                    productId = t.ProductId,
+                    status = t.Status
+                })
+                .ToListAsync();
+
+            return Ok(tasks);
         }
 
         // ----------------------------------------------------
@@ -93,7 +117,7 @@ namespace ReTrackV1.Controllers
             await _context.SaveChangesAsync();
 
             // ----------------------------------------------------
-            // ?? NOTIFICATION FOR WAREHOUSE STAFF (HERE)
+            // NOTIFICATION FOR WAREHOUSE STAFF
             // ----------------------------------------------------
             var warehouseNotification = new Notification
             {
@@ -113,6 +137,22 @@ namespace ReTrackV1.Controllers
                 message = "Report saved successfully",
                 reportId = report.ReportID
             });
+        }
+
+        // GET: api/qc/report/{id}
+        [HttpGet("report/{id}")]
+        public IActionResult GetReportById(string id)
+        {
+            // Assuming your table is called 'QCReports' and the column is 'ProductID'
+            var report = _context.QCReports
+                .FirstOrDefault(r => r.ProductID == id);
+
+            if (report == null)
+            {
+                return NotFound(new { message = $"Report with ID {id} not found." });
+            }
+
+            return Ok(report);
         }
     }
 }

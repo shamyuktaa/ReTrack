@@ -2,16 +2,20 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getProductById, submitQCReport } from "@/app/lib/qcApi";
+import {
+  getProductById,
+  submitQCReport,
+  fetchQCTasks,
+} from "@/app/lib/qcApi";
 
 export default function QCControlPage() {
   const router = useRouter();
 
-  // ---------------------------------------
+  // -----------------------
   // STATE
-  // ---------------------------------------
+  // -----------------------
   const [authorized, setAuthorized] = useState(false);
-
+  const [tasks, setTasks] = useState<any[]>([]);
   const [productId, setProductId] = useState("");
   const [product, setProduct] = useState<any>(null);
 
@@ -20,137 +24,157 @@ export default function QCControlPage() {
   const [notes, setNotes] = useState("");
   const [finalDecision, setFinalDecision] = useState("");
 
-  // ---------------------------------------
-  // ACCESS CONTROL
-  // ---------------------------------------
+  // -----------------------
+  // AUTH CHECK
+  // -----------------------
   useEffect(() => {
     const role = localStorage.getItem("role");
-    if (role === "QC") setAuthorized(true);
-    else router.replace("/");
+    if (role === "QC" || role === "QCStaff") {
+      setAuthorized(true);
+    } else {
+      router.replace("/");
+    }
   }, [router]);
+
+  // -----------------------
+  // LOAD QC TASKS
+  // -----------------------
+  useEffect(() => {
+    if (!authorized) return;
+
+    async function loadTasks() {
+      try {
+        const data = await fetchQCTasks();
+        setTasks(data);
+      } catch (err) {
+        console.error("Failed to load QC tasks", err);
+      }
+    }
+
+    loadTasks();
+  }, [authorized]);
 
   if (!authorized) return null;
 
-  // ---------------------------------------
+  // -----------------------
   // LOAD PRODUCT
-  // ---------------------------------------
-  async function loadProduct() {
-    const data = await getProductById(productId);
-
+  // -----------------------
+  async function loadProduct(pid: string) {
+    const data = await getProductById(pid);
     if (!data) {
       alert("Product not found");
       return;
     }
-
     setProduct(data);
   }
 
-  // ---------------------------------------
-  // SUBMIT REPORT  (FINAL, FIXED)
-  // ---------------------------------------
+  // -----------------------
+  // SUBMIT REPORT
+  // -----------------------
   async function handleSubmit() {
     if (!product) {
-      alert("Load a product first");
+      alert("Select a product first");
       return;
     }
 
-    const inspectorName = localStorage.getItem("username") || "QC User";
-
     const report = {
-      productId: product.productID, // MUST BE LOWERCASE FOR BACKEND
+      productId: product.productID,
       defectType,
       severity,
       notes,
       finalDecision,
-      inspectorName,
-      inspectionDate: new Date().toISOString(), // REQUIRED
+      inspectorName:
+        localStorage.getItem("username") || "QC User",
+      inspectionDate: new Date().toISOString(),
     };
-
-    console.log("Sending Report:", report); // Debug
 
     const result = await submitQCReport(report);
 
     if (result.success) {
-      alert("Report Submitted!");
+      alert("Report submitted");
       router.push("/qc");
     } else {
-      alert("Error submitting report");
+      alert("Submission failed");
     }
   }
 
-  // ---------------------------------------
-  // RESET
-  // ---------------------------------------
-  function resetForm() {
-    setDefectType("Cosmetic Damage");
-    setSeverity(50);
-    setNotes("");
-    setFinalDecision("");
-  }
-
-  // ---------------------------------------
+  // -----------------------
   // UI
-  // ---------------------------------------
+  // -----------------------
   return (
     <div className="min-h-screen bg-[#0f172a] text-white p-6">
 
       <button
-        className="bg-[#1e293b] px-4 py-2 rounded-md mb-6 hover:bg-[#24324a]"
+        className="bg-[#1e293b] px-4 py-2 rounded mb-6"
         onClick={() => router.push("/qc")}
       >
         ← Back to QC Dashboard
       </button>
 
-      <h1 className="text-3xl font-bold mb-6">Product Quality Control</h1>
+      <h1 className="text-3xl font-bold mb-6">
+        Product Quality Control
+      </h1>
 
-      {/* PRODUCT SEARCH */}
-      <div className="flex gap-4 mb-8">
-        <input
-          type="text"
-          placeholder="Enter Product ID (e.g., P1001)"
+      {/* ✅ PRODUCT ID DROPDOWN (THIS IS WHAT YOU WANT) */}
+      <div className="mb-8">
+        <label className="block text-gray-400 mb-2">
+          Product ID
+        </label>
+
+        <select
           value={productId}
-          onChange={(e) => setProductId(e.target.value)}
-          className="flex-1 p-3 rounded bg-[#1e293b] border border-gray-600"
-        />
-
-        <button
-          onClick={loadProduct}
-          className="bg-blue-600 px-6 rounded hover:bg-blue-500"
+          onChange={(e) => {
+            setProductId(e.target.value);
+            loadProduct(e.target.value);
+          }}
+          className="w-full p-3 rounded bg-[#1e293b] border border-gray-600"
         >
-          Load Product
-        </button>
+          <option value="">Select Product ID</option>
+          {tasks.map((t) => (
+            <option key={t.taskId} value={t.productId}>
+              {t.productId}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
-        {/* LEFT PANEL */}
-        <div className="bg-[#1e293b] p-6 rounded-xl shadow-lg">
-          <h2 className="text-xl font-semibold mb-4">Product Details</h2>
-
-          <div className="border border-gray-600 rounded-lg h-56 flex items-center justify-center mb-4">
-            <p className="text-gray-400">No images uploaded</p>
-          </div>
+        {/* LEFT */}
+        <div className="bg-[#1e293b] p-6 rounded-xl">
+          <h2 className="text-xl font-semibold mb-4">
+            Product Details
+          </h2>
 
           {product ? (
-            <div className="space-y-2">
-              <p><strong>Name:</strong> {product.name}</p>
-              <p><strong>Type:</strong> {product.type}</p>
-              <p><strong>Description:</strong> {product.description}</p>
-            </div>
-          ) : (
-            <p className="text-gray-400">Load a product ID to see details</p>
+  <>
+                {product.imageUrl && (
+                  <img
+                    src={product.imageUrl}
+                    alt={product.name}
+                    className="w-full h-48 object-cover rounded mb-4 border border-gray-600"
+                  />
+                )}
+
+                <p><b>Name:</b> {product.name}</p>
+                <p><b>Type:</b> {product.type}</p>
+                <p><b>Description:</b> {product.description}</p>
+              </>
+            ) : (
+
+            <p className="text-gray-400">
+              Select a product to load details
+            </p>
           )}
         </div>
 
-        {/* RIGHT PANEL */}
-        <div className="bg-[#1e293b] p-6 rounded-xl shadow-lg">
-          <h2 className="text-xl font-semibold mb-6">QC Assessment</h2>
-
+        {/* RIGHT */}
+        <div className="bg-[#1e293b] p-6 rounded-xl">
           <label>Defect Type</label>
           <select
             value={defectType}
             onChange={(e) => setDefectType(e.target.value)}
-            className="w-full p-3 bg-[#0f172a] border border-gray-600 rounded mb-4"
+            className="w-full p-3 mb-4 bg-[#0f172a] border"
           >
             <option>Cosmetic Damage</option>
             <option>Functional Issue</option>
@@ -164,45 +188,34 @@ export default function QCControlPage() {
             min="0"
             max="100"
             value={severity}
-            onChange={(e) => setSeverity(Number(e.target.value))}
+            onChange={(e) => setSeverity(+e.target.value)}
             className="w-full mb-4"
           />
 
-          <label>QC Notes</label>
           <textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            placeholder="Add details..."
-            className="w-full p-3 h-28 bg-[#0f172a] border border-gray-600 rounded mb-4"
-          ></textarea>
+            placeholder="QC Notes"
+            className="w-full h-28 p-3 mb-4 bg-[#0f172a] border"
+          />
 
-          <label>Final Decision</label>
           <select
             value={finalDecision}
             onChange={(e) => setFinalDecision(e.target.value)}
-            className="w-full p-3 bg-[#0f172a] border border-gray-600 rounded mb-6"
+            className="w-full p-3 mb-6 bg-[#0f172a] border"
           >
-            <option value="">Select Status</option>
-            <option value="Approved">Approved</option>
-            <option value="Rejected">Rejected</option>
-            <option value="Needs Rework">Needs Rework</option>
+            <option value="">Final Decision</option>
+            <option>Approved</option>
+            <option>Rejected</option>
+            <option>Needs Rework</option>
           </select>
 
-          <div className="flex gap-4">
-            <button
-              onClick={handleSubmit}
-              className="flex-1 bg-blue-600 py-3 rounded hover:bg-blue-500"
-            >
-              Submit Report
-            </button>
-
-            <button
-              onClick={resetForm}
-              className="flex-1 bg-gray-600 py-3 rounded hover:bg-gray-500"
-            >
-              Reset Form
-            </button>
-          </div>
+          <button
+            onClick={handleSubmit}
+            className="w-full bg-blue-600 py-3 rounded"
+          >
+            Submit Report
+          </button>
         </div>
       </div>
     </div>

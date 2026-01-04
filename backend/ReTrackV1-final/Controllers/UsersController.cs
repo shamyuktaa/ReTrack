@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Linq;
 using ReTrackV1.Data;
 using ReTrackV1.Models.DTO;
 using ReTrackV1.Models.Entity;
+using ReTrackV1.Services;
+using System;
+using System.Linq;
 
 namespace ReTrackV1.Controllers
 {
@@ -15,10 +16,12 @@ namespace ReTrackV1.Controllers
     public class UsersController : ControllerBase
     {
         private readonly AppDbContext DbContext;
+        private readonly EmailService _emailService;
 
-        public UsersController(AppDbContext DbContext)
+        public UsersController(AppDbContext DbContext, EmailService emailService)
         {
             this.DbContext = DbContext;
+            _emailService = emailService;
         }
 
         // [GET] /api/users
@@ -96,6 +99,14 @@ namespace ReTrackV1.Controllers
                 {
                     userEntity.UserId = ApprovedUserDto.GeneratePublicId(userEntity.Role, userEntity.Id);
                     userEntity.PasswordHash = ApprovedUserDto.GeneratePublicId(userEntity.Role, userEntity.Id);
+
+                    // Send approval email
+                    _emailService.SendApprovalEmail(
+                        userEntity.Email,
+                        userEntity.UserId,
+                        userEntity.PasswordHash
+                    );
+
                 }
             }
             else if (updateDto.Status.Equals("Rejected", StringComparison.OrdinalIgnoreCase))

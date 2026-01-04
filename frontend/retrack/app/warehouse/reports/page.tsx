@@ -116,6 +116,7 @@ export default function IssueReports() {
                 <tr className="bg-gray-800 text-center text-gray-300 uppercase tracking-wider">
                   <th className="p-4 text-left">Issue ID</th>
                   <th className="text-left">Bag ID</th>
+                  <th className="text-left">RETURN ID</th>
                   <th>Type</th>
                   <th>Status</th>
                 </tr>
@@ -132,8 +133,11 @@ export default function IssueReports() {
                       <td className="p-4 font-mono text-sm text-left">{issue.issueID}</td>
                       
                       {/* Bag ID (using bagCode from nested object) */}
-                      <td className="text-left">{issue.bag.bagCode}</td> 
-                      
+                      <td className="text-left">{issue.bag.bagCode}</td>
+
+                      {/* RETURN ID (using retCode from nested object) */}
+                      <td className="text-left">{issue.return.returnCode}</td> 
+
                       {/* Type (using notes field as 'type' is null in your data) */}
                       <td className="text-center">{issue.notes || 'N/A'}</td> 
                       

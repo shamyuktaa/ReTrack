@@ -97,7 +97,7 @@ namespace ReTrackV1.Controllers
                 return BadRequest(new { message = "Return not for your region" });
             }
 
-            if (ret.PickupStatus == "Pending")
+            if (string.IsNullOrEmpty(ret.PickupStatus) || ret.PickupStatus == "Pending")
             {
                 ret.PickupStatus = "In Progress";
                 await _db.SaveChangesAsync();

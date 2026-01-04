@@ -44,7 +44,7 @@ export default function AdminPage() {
   // SET OPERATIONAL OVERVIEW
   async function loadOverview(){
     try{
-      const res = await fetch(`${API_BASE_URL}/admin/summary`);
+      const res = await fetch(`${API_BASE_URL}/api/overview/admin/summary`);
       if (!res.ok) {
         throw new Error("Failed to load summary")
       }

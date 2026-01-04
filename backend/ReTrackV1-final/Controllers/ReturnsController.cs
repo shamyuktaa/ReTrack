@@ -16,14 +16,14 @@ public class ReturnsController : ControllerBase
 
     // 1️⃣ Get Return details add: Returns.Product.Type
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetReturn(int id)
+    public async Task<IActionResult> GetReturn(string id)
     {
         var ret = await _db.Returns
             .Include(r => r.BagItem)
             .ThenInclude(bi => bi.Bag)
             .Include(r => r.PickupAgent)
             .Include(r => r.Product)
-            .FirstOrDefaultAsync(r => r.Id == id);
+            .FirstOrDefaultAsync(r => r.ReturnCode == id);
 
         if (ret == null) return NotFound();
 

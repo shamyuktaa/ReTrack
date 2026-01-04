@@ -635,7 +635,6 @@ useEffect(() => {
                         </div>
                         <div className="flex items-center space-x-4">
                                           <NotificationBell role="Warehouse" />
-                            
 
                             <button onClick={() => router.push("/warehouse/profile")}
                             className="w-20 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 
@@ -666,7 +665,7 @@ useEffect(() => {
                 {/* Scan Bag */}
                 <div className="bg-gray-900 border border-gray-800 rounded-2xl p-8 mb-10">
                     <h2 className="text-xl font-bold text-white">Scan Bag</h2>
-                    <p className="text-gray-400 mt-2 mb-6">Enter or scan Bag ID to view contents</p>
+                    <p className="text-gray-400 mt-2 mb-6">Select or scan Bag ID to view contents</p>
                     <div className="flex items-center gap-4">
                         <select
                             className="flex-1 bg-gray-800 border border-gray-700 text-white p-2 rounded"

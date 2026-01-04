@@ -28,9 +28,6 @@ namespace ReTrackV1.Models.Entity
         [ForeignKey(nameof(ProductId))]
         public Product? Product { get; set; }
 
-        // ✅ STEP FIX: STORE CATEGORY DIRECTLY IN RETURNS
-        public string? ProductCategory { get; set; }
-
         // ===================== BAG ITEM =====================
         [JsonIgnore]
         public BagItem? BagItem { get; set; }
